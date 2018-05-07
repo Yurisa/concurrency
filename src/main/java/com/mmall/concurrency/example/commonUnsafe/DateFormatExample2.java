@@ -11,9 +11,8 @@ import java.util.concurrent.Semaphore;
 
 @Slf4j
 @NotThreadSafe
-public class DateFormatExample1 {
+public class DateFormatExample2 {
 
-    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
 
     //请求总数
     public static int clientTotal = 5000;
@@ -42,6 +41,7 @@ public class DateFormatExample1 {
     }
 
     private static void update() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
         try {
             simpleDateFormat.parse("20180218");
         }catch (Exception e){

@@ -1,7 +1,11 @@
 package com.mmall.concurrency.example.commonUnsafe;
 
 import com.mmall.concurrency.annoations.NotThreadSafe;
+import com.mmall.concurrency.annoations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.text.SimpleDateFormat;
 import java.util.concurrent.CountDownLatch;
@@ -10,8 +14,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 @Slf4j
-@NotThreadSafe
-public class DateFormatExample2 {
+@ThreadSafe
+public class DateFormatExample3 {
 
 
     //请求总数
@@ -20,15 +24,17 @@ public class DateFormatExample2 {
     // 同时并发执行的线程数
     public static int threadTotal = 200;
 
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd");
     public static void main(String[] args) throws Exception {
         ExecutorService executorService = Executors.newCachedThreadPool();
         final Semaphore semaphore = new Semaphore(threadTotal);
         final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
         for (int i = 0; i < clientTotal ; i++) {
+            final int count = i;
             executorService.execute(() -> {
                 try {
                     semaphore.acquire();
-                    update();
+                    update(count);
                     semaphore.release();
                 } catch (Exception e) {
                     log.error("exception", e);
@@ -40,12 +46,7 @@ public class DateFormatExample2 {
         executorService.shutdown();
     }
 
-    private static void update() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        try {
-            simpleDateFormat.parse("20180218");
-        }catch (Exception e){
-            log.error("parse Exception", e);
-        }
-    }
-    }
+    private static void update(int i) {
+     log.info("{}, {}", i, DateTime.parse("20180218", dateTimeFormatter).toDate());
+     }
+}

@@ -1,33 +1,36 @@
 package com.mmall.concurrency.example.singleton;
 
+import com.mmall.concurrency.annoations.Recommend;
 import com.mmall.concurrency.annoations.ThreadSafe;
-import lombok.extern.slf4j.Slf4j;
 
 /**
- * 饿汉模式
- * 单例实例在类装载时进行创建
+ * 枚举模式
  */
 @ThreadSafe
-public class SingletonExample6 {
+@Recommend
+public class SingletonExample7 {
 
     //私有构造函数
-    private SingletonExample6(){
+    private SingletonExample7(){
 
     }
-    //单例对象
-    private static SingletonExample6 instance = null;
 
-    static {
-        instance = new SingletonExample6();
+    public static SingletonExample7 getInstance(){
+        return Singleton.INSTANCE.getInstance();
     }
 
-    //静态的工厂方法
-    public static SingletonExample6 getInstance(){
-        return  instance;
-    }
+    private enum Singleton{
+        INSTANCE;
 
-    public static void main(String[] args) {
-        System.out.println(getInstance().hashCode());
-        System.out.println(getInstance().hashCode());
+        private SingletonExample7 singleton;
+
+        //JVM保证这个方法绝对只调用一次
+        Singleton(){
+            singleton = new SingletonExample7();
+        }
+
+        public SingletonExample7 getInstance(){
+            return singleton;
+        }
     }
 }

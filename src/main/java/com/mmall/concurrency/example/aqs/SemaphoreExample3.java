@@ -8,7 +8,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class SemaphoreExample2 {
+public class SemaphoreExample3 {
 
     private static int threadCount = 200;
 
@@ -23,9 +23,9 @@ public class SemaphoreExample2 {
 //            log.info("这仅仅是打印数字{}", threadNum);
             exec.execute(() -> {
                 try{
-                    if(semaphore.tryAcquire()){ //尝试获取一个许可
+                    if(semaphore.tryAcquire(5000, TimeUnit.MILLISECONDS)){ //尝试获取一个许可
                         test(threadNum);
-                        semaphore.release(3); //释放一个许可
+                        semaphore.release(); //释放一个许可
                     }
                 }catch(Exception e){
                     log.error("exception", e);

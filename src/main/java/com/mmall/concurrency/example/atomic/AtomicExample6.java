@@ -4,28 +4,47 @@ import com.mmall.concurrency.annoations.ThreadSafe;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @ThreadSafe
-public class AtomicExample5 {
-    private static AtomicIntegerFieldUpdater<AtomicExample5> updater = AtomicIntegerFieldUpdater.newUpdater(AtomicExample5.class, "count");
+public class AtomicExample6 {
+    private static AtomicBoolean isHappened = new AtomicBoolean(false);
 
-    @Getter
-    public volatile int count = 100;
+    //请求总数
+    public static int clientTotal = 5000;
 
-    private static AtomicExample5 example5 = new AtomicExample5();
+    // 同时并发执行的线程数
+    public static int threadTotal = 200;
 
-    public static void main(String[] args) {
-        if(updater.compareAndSet(example5, 100, 120)){
-            log.info("update success 1, {}", example5.getCount());
+    public static void main(String[] args) throws Exception {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        final Semaphore semaphore = new Semaphore(threadTotal);
+        final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
+        for (int i = 0; i < clientTotal ; i++) {
+            executorService.execute(() -> {
+                try {
+                    semaphore.acquire();
+                    test();
+                    semaphore.release();
+                } catch (Exception e) {
+                    log.error("exception", e);
+                }
+                countDownLatch.countDown();
+            });
         }
-        if(updater.compareAndSet(example5, 100, 120)) {
-            log.info("update success 2, {}", example5.getCount());
-        }else {
-            log.info("update failed {}", example5.getCount());
+        countDownLatch.await();
+        executorService.shutdown();
+        log.info("isHappened:{}", isHappened.get());
+    }
+    private static void test(){
+        if(isHappened.compareAndSet(false, true)){
+             log.info("execute");
         }
-
     }
 }

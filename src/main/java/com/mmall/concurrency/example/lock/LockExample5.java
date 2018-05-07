@@ -1,6 +1,5 @@
 package com.mmall.concurrency.example.lock;
 
-import com.mmall.concurrency.annoations.NotThreadSafe;
 import com.mmall.concurrency.annoations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,10 +9,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.StampedLock;
 
 @Slf4j
 @ThreadSafe
-public class LockExample2 {
+public class LockExample5 {
     //请求总数
     public static int clientTotal = 5000;
 
@@ -22,7 +22,7 @@ public class LockExample2 {
 
     public static int count = 0;
 
-    private final static Lock lock = new ReentrantLock();
+    private final static StampedLock lock = new StampedLock();
 
     public static void main(String[] args) throws Exception {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -46,11 +46,11 @@ public class LockExample2 {
     }
 
     private static  void add() {
-        lock.lock();
+        long stamp = lock.writeLock();
         try{
          count++;
         }finally {
-            lock.unlock();
+            lock.unlock(stamp);
         }
     }
 }

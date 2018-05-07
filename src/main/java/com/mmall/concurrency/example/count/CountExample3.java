@@ -1,6 +1,7 @@
 package com.mmall.concurrency.example.count;
 
 import com.mmall.concurrency.annoations.NotThreadSafe;
+import com.mmall.concurrency.annoations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
@@ -9,8 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 @Slf4j
-@NotThreadSafe
-public class CountExample1 {
+@ThreadSafe
+public class CountExample3 {
     //请求总数
     public static int clientTotal = 5000;
 
@@ -40,7 +41,7 @@ public class CountExample1 {
         log.info("count:{}", count);
     }
 
-    private static void add() {
+    private static synchronized void add() {
         count++;
     }
 }

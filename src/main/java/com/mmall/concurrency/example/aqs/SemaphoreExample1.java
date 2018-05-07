@@ -5,9 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 @Slf4j
-public class CountDownLatchExample1 {
+public class SemaphoreExample1 {
 
     private static int threadCount = 200;
 
@@ -15,22 +16,21 @@ public class CountDownLatchExample1 {
 
         ExecutorService exec = Executors.newCachedThreadPool();
         
-        final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+         final Semaphore semaphore = new Semaphore(3);
 
         for (int i = 0; i < threadCount; i++) {
             final int threadNum = i;
 //            log.info("这仅仅是打印数字{}", threadNum);
             exec.execute(() -> {
                 try{
+                   semaphore.acquire(3); //获取一个许可
                   test(threadNum);
+                  semaphore.release(3); //释放一个许可
                 }catch(Exception e){
                     log.error("exception", e);
-                }finally {
-                    countDownLatch.countDown();
                 }
             });
         }
-        countDownLatch.await();
         log.info("finish");
         exec.shutdown();
     }
