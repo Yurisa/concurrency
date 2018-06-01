@@ -1,7 +1,8 @@
 package com.mmall.concurrency.example.threadLocal;
 
-public class RequestHolder {
+import java.util.HashMap;
 
+public class RequestHolder {
     private final static ThreadLocal<Long> reuestHolder = new ThreadLocal<>();
 
     public static void add(Long id){
